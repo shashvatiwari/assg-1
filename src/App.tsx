@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { DataTable } from 'primereact/datatable';
-import { DataTableSelectionChangeEvent } from 'primereact/datatable'; // Correct import
 import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
 import { OverlayPanel } from 'primereact/overlaypanel';
@@ -61,9 +60,8 @@ const App: React.FC = () => {
     setPage(event.page + 1);
   };
 
-  const handleRowSelect = (e: DataTableSelectionChangeEvent<Artwork[]>) => {
-    const selection = e.value; // `e.value` should be of type `Artwork[]`
-    setSelectedRows(selection);
+  const handleRowSelect = (e: { value: Artwork[] }) => {
+    setSelectedRows(e.value);
   };
 
   const isSelected = (rowData: Artwork) =>
@@ -114,8 +112,6 @@ const App: React.FC = () => {
 
   return (
     <div className="App">
-      <h1>Artworks Table</h1>
-
       <DataTable
         value={artworks}
         paginator
