@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { DataTable, DataTableSelectionChangeEvent } from 'primereact/datatable';
+import { DataTable } from 'primereact/datatable';
+import { DataTableSelectionChangeEvent } from 'primereact/datatable'; // Correct import
 import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
 import { OverlayPanel } from 'primereact/overlaypanel';
@@ -60,24 +61,21 @@ const App: React.FC = () => {
     setPage(event.page + 1);
   };
 
-  const handleRowSelect = (e: DataTableSelectionChangeEvent) => {
-    setSelectedRows(e.value);
+  const handleRowSelect = (e: DataTableSelectionChangeEvent<Artwork[]>) => {
+    const selection = e.value; // `e.value` should be of type `Artwork[]`
+    setSelectedRows(selection);
   };
 
   const isSelected = (rowData: Artwork) =>
     selectedRows.some((selected) => selected.id === rowData.id);
 
-  // Function to handle the row selection count submission
   const handleRowSelectionSubmit = async () => {
-    // Reset previous selection
-    // setSelectedRows([]);
-    let remainingRowsToSelect = rowSelectionCount;
+    let remainingRowsToSelect = rowSelectionCount ?? 0;
     let currentPage = page;
-    let selected = [];
+    let selected: Artwork[] = [];
 
-    // Fetch and select rows across pages
     while (remainingRowsToSelect > 0 && currentPage <= Math.ceil(totalRecords / 10)) {
-      await fetchData(currentPage); // Load the current page data
+      await fetchData(currentPage);
       const rowsToSelect = artworks.slice(0, remainingRowsToSelect);
       selected.push(...rowsToSelect);
       remainingRowsToSelect -= rowsToSelect.length;
@@ -85,7 +83,7 @@ const App: React.FC = () => {
     }
 
     setSelectedRows(selected);
-    op.current?.hide(); // Close the OverlayPanel after submitting
+    op.current?.hide();
   };
 
   const renderHeader = () => {
@@ -131,6 +129,7 @@ const App: React.FC = () => {
         rowClassName={(rowData) =>
           isSelected(rowData) ? 'selected-row' : ''
         }
+        selectionMode="multiple"
       >
         <Column selectionMode="multiple" headerStyle={{ width: '3em' }}></Column>
         <Column field="title" header={renderHeader()}></Column>
